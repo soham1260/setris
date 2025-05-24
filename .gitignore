@@ -1,0 +1,9 @@
+# Ignore compiled object files
+*.o
+
+# Optional: ignore executable if on Windows
+*.exe
+
+# Optional: ignore build directories
+
+/external/

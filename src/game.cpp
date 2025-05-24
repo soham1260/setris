@@ -4,11 +4,17 @@
 Game::Game()
 {
     grid = Grid();
+    gameOver = false;
+    initialized = false;
+    mode = NONE;
+}
+
+void Game::InitializeStandard()
+{
+    score = 0;
     blocks = GetAllBlocks();
     cur_block = GetRandomBlock();
     next_block = GetRandomBlock();
-    gameOver = false;
-    score = 0;
 }
 
 Block Game::GetRandomBlock()
@@ -56,6 +62,8 @@ void Game::handleInput()
     {
         gameOver = false;
         ResetGame();
+        initialized = false;
+        mode = NONE;
     }
 
     switch (key)
@@ -193,10 +201,6 @@ void Grid::ClearRow(int row)
 void Game::ResetGame()
 {
     grid.Initialize();
-    blocks = GetAllBlocks();
-    cur_block = GetRandomBlock();
-    next_block = GetRandomBlock();
-    score = 0;
 }
 
 void Game::UpdateScore(int lines,int down)

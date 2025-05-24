@@ -29,33 +29,73 @@ int main()
 
     Game game = Game();
 
+    Rectangle standardBtn = { 150, 180, 200, 40 };
+    Rectangle customBtn = { 150, 250, 200, 40 };
+
     while (!WindowShouldClose())
     {
         game.handleInput();
 
-        if(EventTriggered(0.2)) // move block down only after 0.2s
+        if(game.mode == START)
         {
-            game.MoveBlockDown();
+            if(!game.initialized)
+            {
+                game.initialized = true;
+                game.InitializeStandard();
+            }
+            if(EventTriggered(0.2)) // move block down only after 0.2s
+            {
+                game.MoveBlockDown();
+            }
+            //remember everything is first calculated then drawn. Nothing is calculated while drawing.
+            BeginDrawing();
+
+            ClearBackground(darkBlue);
+            
+            DrawTextEx(font,"Score",{340,20},24,2,WHITE);
+
+            DrawRectangleRounded({320,55,170,60},0.3,6,lightBlue);
+
+            char score[10];
+            sprintf(score,"%d",game.score);
+            Vector2 textSize = MeasureTextEx(font,score,24,2);
+            DrawTextEx(font,score,{320+(170-textSize.x)/2,75},24,2,WHITE);
+
+            DrawTextEx(font,"Next",{355,180},24,2,WHITE);
+            DrawRectangleRounded({320,215,170,180},0.3,6,lightBlue);
+            if(game.gameOver) DrawTextEx(font,"Game Over",{320,450},18,2,WHITE);
+            game.Draw();
+            EndDrawing();
         }
-        //remember everything is first calculated then drawn. Nothing is calculated while drawing.
-        BeginDrawing();
+        else if (game.mode == CUSTOM) 
+        {
+            
+        }
+        else 
+        {
+            BeginDrawing();
+            ClearBackground(darkBlue);
 
-        ClearBackground(darkBlue);
-        
-        DrawTextEx(font,"Score",{340,20},24,2,WHITE);
+            DrawTextEx(font,"Choose Mode",{80, 120}, 30,0, WHITE);
 
-        DrawRectangleRounded({320,55,170,60},0.3,6,lightBlue);
+            // Draw buttons
+            DrawRectangleRec(standardBtn, LIGHTGRAY);
+            DrawTextEx(font,"Standard", {standardBtn.x + 20, standardBtn.y + 10}, 20,0, WHITE);
 
-        char score[10];
-        sprintf(score,"%d",game.score);
-        Vector2 textSize = MeasureTextEx(font,score,24,2);
-        DrawTextEx(font,score,{320+(170-textSize.x)/2,75},24,2,WHITE);
+            DrawRectangleRec(customBtn, LIGHTGRAY);
+            DrawTextEx(font,"Custom", {customBtn.x + 40, customBtn.y + 10}, 20,0, WHITE);
 
-        DrawTextEx(font,"Next",{355,180},24,2,WHITE);
-        DrawRectangleRounded({320,215,170,180},0.3,6,lightBlue);
-        if(game.gameOver) DrawTextEx(font,"Game Over",{320,450},18,2,WHITE);
-        game.Draw();
-        EndDrawing();
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                Vector2 mouse = GetMousePosition();
+                if (CheckCollisionPointRec(mouse, standardBtn)) {
+                    game.mode = START;
+                } else if (CheckCollisionPointRec(mouse, customBtn)) {
+                    game.mode = CUSTOM;
+                }
+            }
+            EndDrawing();
+        }
+
     }
     
     CloseWindow();

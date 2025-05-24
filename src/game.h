@@ -2,6 +2,8 @@
 #include "blocks.cpp"
 #include <vector>
 
+enum GameMode { NONE, START, CUSTOM };
+
 class Game {
     private:
         std::vector<Block> blocks;
@@ -26,4 +28,7 @@ class Game {
         void MoveBlockDown();
         bool gameOver;
         int score;
+        GameMode mode;
+        bool initialized;
+        void InitializeStandard();
 };
