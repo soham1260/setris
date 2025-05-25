@@ -1,5 +1,6 @@
 #include "grid.h"
 #include "blocks.cpp"
+#include "position.h"
 #include <vector>
 
 enum GameMode { NONE, START, CUSTOM };
@@ -7,6 +8,7 @@ enum GameMode { NONE, START, CUSTOM };
 class Game {
     private:
         std::vector<Block> blocks;
+        std::vector<Block> all_blocks;
         Block cur_block;
         Block next_block;
         bool IsBlockOutside();
@@ -31,5 +33,6 @@ class Game {
         GameMode mode;
         bool initialized;
         void InitializeStandard();
+        void InitializeCustom(std::vector<std::vector<Position>> custom_positions);
         bool customSetup;
 };

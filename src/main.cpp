@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <ctime> 
 #include <vector>
-using namespace std;
 
 struct Key {
     Rectangle rect;
@@ -40,7 +39,7 @@ int main()
 
     std::vector<Key> keys;
     std::vector<Position> activePositions;
-    std::vector<vector<Position>> custom_positions;
+    std::vector<std::vector<Position>> custom_positions;
     int keySize = 80;
     int spacing = 10;
     int startX = 60;
@@ -111,7 +110,7 @@ int main()
 
                     if (CheckCollisionPointRec(mouse, submitBtn)) {
                         activePositions.clear();  // Reset previous results
-                        for (int i = 0; i < keys.size(); ++i) {
+                        for (int i = 0; i < keys.size(); ++i) {//iterates over all 9 buttons
                             if (keys[i].isActive) {
                                 int row = i / 3;
                                 int col = i % 3;
@@ -157,15 +156,45 @@ int main()
             {
                 if(!game.initialized)
                 {
-                    for(auto activePositions:custom_positions)
-                    {
-                        for (const auto &pos : activePositions) {
-                            std::cout << "(" << pos.row << ", " << pos.col << ")";
-                        }
-                        cout<<std::endl;
-                    }
+                    // for(auto activePositions:custom_positions)
+                    // {
+                    //     for (const auto &pos : activePositions) {
+                    //         std::cout << "(" << pos.row << ", " << pos.col << ")";
+                    //     }
+                    //     std::cout<<std::endl;
+                    // }
+
+                    game.initialized = true;
+                    game.InitializeCustom(custom_positions);
+                    custom_positions.clear();
                 }
-                break;
+                else
+                {
+                    std::cout<<"Sdvs";
+                    if(EventTriggered(0.2)) // move block down only after 0.2s
+                    {
+                        game.MoveBlockDown();
+                    }
+                    //remember everything is first calculated then drawn. Nothing is calculated while drawing.
+                    BeginDrawing();
+
+                    ClearBackground(darkBlue);
+                    
+                    DrawTextEx(font,"Score",{340,20},24,2,WHITE);
+
+                    DrawRectangleRounded({320,55,170,60},0.3,6,lightBlue);
+
+                    char score[10];
+                    sprintf(score,"%d",game.score);
+                    Vector2 textSize = MeasureTextEx(font,score,24,2);
+                    DrawTextEx(font,score,{320+(170-textSize.x)/2,75},24,2,WHITE);
+
+                    DrawTextEx(font,"Next",{355,180},24,2,WHITE);
+                    DrawRectangleRounded({320,215,170,180},0.3,6,lightBlue);
+                    if(game.gameOver) DrawTextEx(font,"Game Over",{320,450},18,2,WHITE);
+                    game.Draw();
+                    EndDrawing();
+                }
             }
             
         }

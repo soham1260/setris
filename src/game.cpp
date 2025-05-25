@@ -1,5 +1,7 @@
 #include "game.h"
 #include <cstdlib> 
+#include <vector>
+#include <iostream>
 
 Game::Game()
 {
@@ -17,14 +19,62 @@ void Game::InitializeStandard()
     next_block = GetRandomBlock();
 }
 
+void Game::InitializeCustom(std::vector<std::vector<Position>> custom_positions)
+{
+    int i=0;
+    score = 0;
+    all_blocks.clear();
+    for(auto positions:custom_positions)
+    {
+        Block block = Block();
+        block.id = i+1;
+        block.cells[0] = positions;
+        
+        for (int j = 1; j <= 3; j++) {
+            std::vector<Position> rotated;
+            for (const auto& pos : block.cells[j - 1]) {
+                int nr = 1 + (pos.col - 1);
+                int nc = 1 - (pos.row - 1);
+                rotated.push_back(Position(nr, nc));
+            }
+            block.cells[j] = rotated;
+        }
+
+        block.Move(0,3);
+        all_blocks.push_back(block);
+        i++;
+    }
+    std::cout<<all_blocks.size();
+    for(auto it:all_blocks)
+    {
+        for(auto pos:it.cells[0])
+        {
+            std::cout << "(" << pos.row << ", " << pos.col << ")";
+        }
+        std::cout<<std::endl;
+    }
+    cur_block = GetRandomBlock();
+    next_block = GetRandomBlock();
+}
+
 Block Game::GetRandomBlock()
 {
-    if(blocks.empty()) blocks = GetAllBlocks();
+    if(blocks.empty())
+    {
+        if(mode == START)
+        {
+            blocks = GetAllBlocks();
+        }
+        else
+        {
+            blocks = all_blocks;
+        }
+    }
 
     int block_index = rand() % blocks.size();
     Block block = blocks[block_index];
     blocks.erase(blocks.begin() + block_index);
-
+    
     return block;
 }
 
