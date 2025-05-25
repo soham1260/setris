@@ -23,9 +23,36 @@ bool EventTriggered(double interval)
     return false;
 }
 
+void render(Game &game, Font font)
+{
+    if(EventTriggered(0.2)) // move block down only after 0.2s
+    {
+        game.MoveBlockDown();
+    }
+    //remember everything is first calculated then drawn. Nothing is calculated while drawing.
+    BeginDrawing();
+
+    ClearBackground(darkBlue);
+                    
+    DrawTextEx(font,"Score",{340,60},24,2,WHITE);
+
+    DrawRectangleRounded({320,95,170,60},0.3,6,lightBlue);
+
+    char score[10];
+    sprintf(score,"%d",game.score);
+    Vector2 textSize = MeasureTextEx(font,score,24,2);
+    DrawTextEx(font,score,{320+(170-textSize.x)/2,115},24,2,WHITE);
+
+    DrawTextEx(font,"Next",{355,220},24,2,WHITE);
+    DrawRectangleRounded({320,255,170,180},0.3,6,lightBlue);
+    if(game.gameOver) DrawTextEx(font,"Game Over",{320,490},18,2,WHITE);
+    game.Draw();
+    EndDrawing();
+}
+
 int main()
 {
-    InitWindow(500,620, "Tetris");
+    InitWindow(500,620, "Setris");
     SetTargetFPS(60);
 
     srand(time(0));
@@ -34,16 +61,16 @@ int main()
 
     Game game = Game();
 
-    Rectangle standardBtn = { 150, 180, 200, 40 };
-    Rectangle customBtn = { 150, 250, 200, 40 };
+    Rectangle standardBtn = { 150, 300, 200, 40 };
+    Rectangle customBtn = { 150, 370, 200, 40 };
 
     std::vector<Key> keys;
     std::vector<Position> activePositions;
     std::vector<std::vector<Position>> custom_positions;
     int keySize = 80;
     int spacing = 10;
-    int startX = 60;
-    int startY = 40;
+    int startX = 120;
+    int startY = 60;
     int count = 1;
 
     for (int row = 0; row < 3; row++) {
@@ -58,8 +85,8 @@ int main()
         }
     }
 
-    Rectangle submitBtn = { 150, 330, 100, 40 };
-    Rectangle startBtn = { 270, 300, 100, 40 };
+    Rectangle submitBtn = { 140, 360, 220, 40 };
+    Rectangle startBtn = { 140, 420, 220, 40 };
 
     while (!WindowShouldClose())
     {
@@ -72,29 +99,7 @@ int main()
                 game.initialized = true;
                 game.InitializeStandard();
             }
-            if(EventTriggered(0.2)) // move block down only after 0.2s
-            {
-                game.MoveBlockDown();
-            }
-            //remember everything is first calculated then drawn. Nothing is calculated while drawing.
-            BeginDrawing();
-
-            ClearBackground(darkBlue);
-            
-            DrawTextEx(font,"Score",{340,20},24,2,WHITE);
-
-            DrawRectangleRounded({320,55,170,60},0.3,6,lightBlue);
-
-            char score[10];
-            sprintf(score,"%d",game.score);
-            Vector2 textSize = MeasureTextEx(font,score,24,2);
-            DrawTextEx(font,score,{320+(170-textSize.x)/2,75},24,2,WHITE);
-
-            DrawTextEx(font,"Next",{355,180},24,2,WHITE);
-            DrawRectangleRounded({320,215,170,180},0.3,6,lightBlue);
-            if(game.gameOver) DrawTextEx(font,"Game Over",{320,450},18,2,WHITE);
-            game.Draw();
-            EndDrawing();
+            render(game,font);
         }
         else if (game.mode == CUSTOM) 
         {
@@ -119,6 +124,7 @@ int main()
                             }
                         }
                         if (!activePositions.empty()) {
+                            game.totalBlocks++;
                             custom_positions.push_back(activePositions);
                         }
                         // For demo: print positions to console
@@ -127,7 +133,7 @@ int main()
                         }
                     }
 
-                    if (CheckCollisionPointRec(mouse, startBtn)) {
+                    if (CheckCollisionPointRec(mouse, startBtn) && game.totalBlocks>0) {
                         game.customSetup = false;
                         game.initialized = false;
                     }
@@ -135,7 +141,7 @@ int main()
 
                 // Drawing
                 BeginDrawing();
-                ClearBackground(RAYWHITE);
+                ClearBackground(darkBlue);
 
                 for (const auto &key : keys) {
                     DrawRectangleRec(key.rect, key.isActive ? GREEN : RED);
@@ -144,11 +150,15 @@ int main()
 
                 DrawRectangleRec(submitBtn, DARKGRAY);
                 DrawRectangleLinesEx(submitBtn, 2, BLACK);
-                DrawText("Submit", submitBtn.x + 15, submitBtn.y + 10, 20, WHITE);
+                DrawTextEx(font,"Add Block", {submitBtn.x + 20, submitBtn.y + 10}, 20,0, WHITE);
 
                 DrawRectangleRec(startBtn, BLUE);
                 DrawRectangleLinesEx(startBtn, 2, BLACK);
-                DrawText("Start", startBtn.x + 20, startBtn.y + 10, 20, WHITE);
+                DrawTextEx(font,"Start", {startBtn.x + 60, startBtn.y + 10}, 20,0, WHITE);
+
+                std::string blockCountStr = std::to_string(game.totalBlocks);
+                DrawTextEx(font, "Total Blocks : ", {90, startBtn.y + 80}, 20, 0, WHITE);
+                DrawTextEx(font, blockCountStr.c_str(), {390, startBtn.y + 80}, 20, 0, WHITE);
 
                 EndDrawing();
             }
@@ -170,30 +180,7 @@ int main()
                 }
                 else
                 {
-                    std::cout<<"Sdvs";
-                    if(EventTriggered(0.2)) // move block down only after 0.2s
-                    {
-                        game.MoveBlockDown();
-                    }
-                    //remember everything is first calculated then drawn. Nothing is calculated while drawing.
-                    BeginDrawing();
-
-                    ClearBackground(darkBlue);
-                    
-                    DrawTextEx(font,"Score",{340,20},24,2,WHITE);
-
-                    DrawRectangleRounded({320,55,170,60},0.3,6,lightBlue);
-
-                    char score[10];
-                    sprintf(score,"%d",game.score);
-                    Vector2 textSize = MeasureTextEx(font,score,24,2);
-                    DrawTextEx(font,score,{320+(170-textSize.x)/2,75},24,2,WHITE);
-
-                    DrawTextEx(font,"Next",{355,180},24,2,WHITE);
-                    DrawRectangleRounded({320,215,170,180},0.3,6,lightBlue);
-                    if(game.gameOver) DrawTextEx(font,"Game Over",{320,450},18,2,WHITE);
-                    game.Draw();
-                    EndDrawing();
+                    render(game,font);
                 }
             }
             
@@ -203,7 +190,9 @@ int main()
             BeginDrawing();
             ClearBackground(darkBlue);
 
-            DrawTextEx(font,"Choose Mode",{80, 120}, 30,0, WHITE);
+            DrawTextEx(font,"SETRIS",{90, 120}, 56,0, WHITE);
+
+            DrawTextEx(font,"Choose Mode",{90, 240}, 30,0, WHITE);
 
             // Draw buttons
             DrawRectangleRec(standardBtn, LIGHTGRAY);

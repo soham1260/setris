@@ -35,4 +35,5 @@ class Game {
         void InitializeStandard();
         void InitializeCustom(std::vector<std::vector<Position>> custom_positions);
         bool customSetup;
+        int totalBlocks;
 };

@@ -9,6 +9,7 @@ Game::Game()
     gameOver = false;
     initialized = false;
     mode = NONE;
+    totalBlocks = 0;
 }
 
 void Game::InitializeStandard()
@@ -17,13 +18,13 @@ void Game::InitializeStandard()
     blocks = GetAllBlocks();
     cur_block = GetRandomBlock();
     next_block = GetRandomBlock();
+    totalBlocks = blocks.size();
 }
 
 void Game::InitializeCustom(std::vector<std::vector<Position>> custom_positions)
 {
     int i=0;
     score = 0;
-    all_blocks.clear();
     for(auto positions:custom_positions)
     {
         Block block = Block();
@@ -91,15 +92,15 @@ void Game::Draw()
     switch (next_block.id)
     {
         case 3://I block
-            next_block.Draw(255,290);
+            next_block.Draw(255,330);
             break;
 
         case 4://O block
-            next_block.Draw(285,270);
+            next_block.Draw(285,310);
             break;
 
         default:
-            next_block.Draw(270,270);
+            next_block.Draw(270,310);
             break;
     }
 }
@@ -114,6 +115,9 @@ void Game::handleInput()
         ResetGame();
         initialized = false;
         mode = NONE;
+        totalBlocks = 0;
+        blocks.clear();
+        all_blocks.clear();
     }
 
     switch (key)
