@@ -31,4 +31,5 @@ class Game {
         GameMode mode;
         bool initialized;
         void InitializeStandard();
+        bool customSetup;
 };
