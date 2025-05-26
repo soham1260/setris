@@ -18,6 +18,8 @@ class Block {
         void Draw(int x_offset,int y_offset);
         void Move(int rows,int cols);
         std::vector<Position> GetCellPositions();
-        void Rotate();
-        void UndoRotate();
+        void RotateRight();
+        void UndoRotateRight();
+        void RotateLeft();
+        void UndoRotateLeft();
 };

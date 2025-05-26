@@ -25,9 +25,10 @@ bool EventTriggered(double interval)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void render(Game &game, Font font)
+void render(Game &game, Font font, std::string inputText)
 {
-    if(EventTriggered(0.2)) // move block down only after 0.2s
+    double interval = (game.mode == CUSTOM && inputText.length()) ? std::stod(inputText)/1000 : 0.2;
+    if(EventTriggered(interval)) // move block down only after 0.2s
     {
         game.MoveBlockDown();
     }
@@ -104,7 +105,7 @@ int main()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::string inputText = "";
+    std::string inputText = "200";
     bool isInputActive = false;
     Rectangle inputBox = { 350, 540, 120, 30 };
 
@@ -125,7 +126,7 @@ int main()
                 game.initialized = true;
                 game.InitializeStandard();
             }
-            render(game,font);
+            render(game,font,inputText);
         }
         else if (game.mode == CUSTOM) 
         {
@@ -226,7 +227,7 @@ int main()
                 DrawTextEx(font, "Right rotation ", {20, 505}, 20, 0, WHITE);
                 right_rotate_Toggle.Draw();
 
-                DrawTextEx(font,"Speed (seconds)", {20,545}, 18,0, WHITE);
+                DrawTextEx(font,"Speed (ms/frame)", {20,545}, 18,0, WHITE);
                 DrawRectangleRec(inputBox, isInputActive ? LIGHTGRAY : GRAY);
                 DrawRectangleLinesEx(inputBox, 2, DARKGRAY);
                 DrawTextEx(font, inputText.c_str(), {inputBox.x + 7, inputBox.y + 7}, 18, 0, BLACK);
@@ -250,12 +251,12 @@ int main()
                     // }
 
                     game.initialized = true;
-                    game.InitializeCustom(custom_positions);
+                    game.InitializeCustom(custom_positions,left_Toggle.GetState(),right_Toggle.GetState(),up_Toggle.GetState(),down_Toggle.GetState(),left_rotate_Toggle.GetState(),right_rotate_Toggle.GetState());
                     custom_positions.clear();
                 }
                 else
                 {
-                    render(game,font);
+                    render(game,font,inputText);
                 }
             }
             

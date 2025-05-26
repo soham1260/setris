@@ -19,9 +19,15 @@ void Game::InitializeStandard()
     cur_block = GetRandomBlock();
     next_block = GetRandomBlock();
     totalBlocks = blocks.size();
+    allow_left = true;
+    allow_right = true;
+    allow_up = false;
+    allow_down = true;
+    allow_left_rotate = false;
+    allow_right_rotate = true;
 }
 
-void Game::InitializeCustom(std::vector<std::vector<Position>> custom_positions)
+void Game::InitializeCustom(std::vector<std::vector<Position>> custom_positions, bool left, bool right, bool up, bool down, bool left_rotate, bool right_rotate)
 {
     int i=0;
     score = 0;
@@ -54,6 +60,14 @@ void Game::InitializeCustom(std::vector<std::vector<Position>> custom_positions)
         }
         std::cout<<std::endl;
     }
+
+    allow_left = left;
+    allow_right = right;
+    allow_up = up;
+    allow_down = down;
+    allow_left_rotate = left_rotate;
+    allow_right_rotate = right_rotate;
+    
     cur_block = GetRandomBlock();
     next_block = GetRandomBlock();
 }
@@ -123,39 +137,53 @@ void Game::handleInput()
     switch (key)
     {
     case KEY_LEFT:
-        MoveBlockLeft();
+        if(allow_left) MoveBlockLeft();
         break;
     
     case KEY_A:
-        MoveBlockLeft();
+        if(allow_left) MoveBlockLeft();
         break;
     
     case KEY_RIGHT:
-        MoveBlockRight();
+        if(allow_right) MoveBlockRight();
         break;
     
     case KEY_D:
-        MoveBlockRight();
+        if(allow_right) MoveBlockRight();
         break;
 
     case KEY_DOWN:
-        MoveBlockDown();
-        UpdateScore(0,1);
+        if(allow_down)
+        {
+            MoveBlockDown();
+            UpdateScore(0,1);
+        }
         break;
     
     case KEY_S:
-        MoveBlockDown();
-        UpdateScore(0,1);
+        if(allow_down)
+        {
+            MoveBlockDown();
+            UpdateScore(0,1);
+        }
         break;
     
     case KEY_UP:
-        RotateBlock();
+        if(allow_up) MoveBlockUp();
         break;
 
     case KEY_W:
-        RotateBlock();
+        if(allow_up) MoveBlockUp();
         break;
 
+    case KEY_E:
+        if(allow_right_rotate) RotateBlockRight();
+        break;
+
+    case KEY_Q:
+        if(allow_left_rotate) RotateBlockLeft();
+        break;
+    
     default:
         break;
     }
@@ -192,6 +220,18 @@ void Game::MoveBlockDown()
     }
 }
 
+void Game::MoveBlockUp()
+{
+    if(!gameOver)
+    {
+        cur_block.Move(-1,0);
+        if(IsBlockOutside() || !BlockFits())//block has reached lowest possible level
+        {
+            cur_block.Move(1,0);
+        }
+    }
+}
+
 bool Game::IsBlockOutside()
 {
     std::vector<Position> tiles = cur_block.GetCellPositions();
@@ -202,15 +242,23 @@ bool Game::IsBlockOutside()
     return false;
 }
 
-void Game::RotateBlock()
+void Game::RotateBlockRight()
 {
     if(!gameOver)
     {
-        cur_block.Rotate();
-        if(IsBlockOutside()) cur_block.UndoRotate();
+        cur_block.RotateRight();
+        if(IsBlockOutside()) cur_block.UndoRotateRight();
     }
 }
 
+void Game::RotateBlockLeft()
+{
+    if(!gameOver)
+    {
+        cur_block.RotateLeft();
+        if(IsBlockOutside()) cur_block.UndoRotateLeft();
+    }
+}
 void Game::LockBlock()
 {
     std::vector<Position> tiles = cur_block.GetCellPositions(); 

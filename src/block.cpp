@@ -39,14 +39,26 @@ std::vector<Position> Block::GetCellPositions()
     return movedTiles;
 }
 
-void Block::Rotate()
+void Block::RotateRight()
 {
     r_state++;
     r_state%=4;
 }
 
-void Block::UndoRotate()
+void Block::UndoRotateRight()
 {
     r_state--;
     if(r_state == -1) r_state = 3;
+}
+
+void Block::RotateLeft()
+{
+    r_state--;
+    if(r_state == -1) r_state = 3;
+}
+
+void Block::UndoRotateLeft()
+{
+    r_state++;
+    r_state%=4;
 }
