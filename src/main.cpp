@@ -168,7 +168,11 @@ int main()
                     }
 
                     if (CheckCollisionPointRec(mouse, randomBtn)) {
-                        
+                        for (auto &key : keys) {
+                            if (rand() % 2) {
+                                key.isActive = !key.isActive;
+                            }
+                        }
                     }
                 }
 
